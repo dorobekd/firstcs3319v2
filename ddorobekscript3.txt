@@ -1,0 +1,51 @@
+USE ddorobekassign2db;
+
+-- query 1
+SELECT productdescription FROM product;
+
+-- query 2
+SELECT DISTINCT city FROM customer;
+
+-- query 3
+SELECT * FROM agent ORDER BY city;
+
+-- query 4
+SELECT firstname, lastname FROM customer WHERE city="Springfield";
+
+-- query 5
+SELECT customer.lastname FROM customer, agent WHERE customer.agentid=agent.agentid AND agent.firstname="Regis";
+
+-- query 6
+SELECT productdescription from product WHERE LOWER(productdescription) LIKE LOWER('%pad%');
+
+
+-- query 7
+SELECT customer.lastname, product.productdescription, purchases.quantitypurchased from customer, product, purchases WHERE customer.customerid=purchases.customerid AND purchases.productid=product.productid;
+
+-- query 8
+SELECT SUM(DISTINCT quantitypurchased) AS 'Homer\'s Total Purchases' FROM purchases WHERE customerid IN (SELECT customerid FROM customer WHERE firstname="Homer");
+
+-- query 9
+SELECT customer.firstname, customer.lastname, SUM(purchases.quantitypurchased) AS 'total purchases' FROM customer, purchases, product WHERE purchases.customerid=customer.customerid AND purchases.productid=product.productid GROUP BY customer.lastname;
+
+-- query 10
+SELECT DISTINCT productdescription, quantity FROM product WHERE NOT EXISTS (SELECT productid FROM purchases WHERE productid=product.productid);
+
+-- query 11
+SELECT productdescription, quantity FROM product WHERE productid NOT IN (SELECT productid FROM purchases WHERE customerid IN (SELECT customerid FROM customer WHERE firstname="Fred" AND lastname="Flintstone"));
+
+SELECT productdescription, quantity FROM product LEFT JOIN purchases ON product.productid=purchases.productid WHERE purchases.customerid=(SELECT customerid FROM customer WHERE firstname="Fred" AND lastname="Flintstone") IS NULL;
+
+SELECT DISTINCT product.productdescription, product.quantity FROM product, purchases WHERE NOT EXISTS(SELECT purchases.customerid FROM customer, purchases WHERE purchases.customerid=(SELECT customerid FROM customer WHERE customer.firstname="Fred" AND customer.lastname="Flintstone"));
+
+-- query 12
+SELECT agent.firstname AS 'agent firstname', agent.lastname AS 'agent lastname', customer.firstname AS 'customer firstname', customer.lastname AS 'customer lastname' FROM agent, customer WHERE agent.city=customer.city;
+
+-- query 13
+SELECT SUM(quantitypurchased) AS 'Total Knee Pads Purchased' FROM purchases WHERE productid=(SELECT product.productid FROM product WHERE LOWER(product.productdescription) LIKE LOWER('%knee pads%'));
+
+-- query 14
+SELECT product.productdescription FROM product WHERE 3<(SELECT COUNT(purchases.customerid) FROM purchases);
+
+-- query 15
+SELECT DISTINCT agent.firstname, agent.lastname FROM agent, customer, purchases WHERE purchases.productid=(SELECT productid from product WHERE LOWER(productdescription) LIKE LOWER('%knee pads%')) AND customer.customerid=purchases.customerid AND customer.agentid=agent.agentid;

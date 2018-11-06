@@ -1,0 +1,24 @@
+USE ddorobekassign2db;
+
+-- show data in tables
+SELECT * FROM product;
+SELECT * FROM agent;
+SELECT * FROM customer;
+SELECT * FROM purchases;
+
+-- create view and show data in view
+CREATE VIEW CustomerOrders AS SELECT customer.firstname, customer.lastname, product.productdescription, purchases.quantitypurchased, FORMAT(product.costperitem, 2) AS 'Cost Per Item', FORMAT(purchases.quantitypurchased * product.costperitem, 2) AS 'Total Cost' FROM customer INNER JOIN purchases ON purchases.customerid = customer.customerid INNER JOIN product ON product.productid = purchases.productid ORDER BY customer.lastname;
+SELECT * FROM CustomerOrders;
+SELECT * FROM CustomerOrders WHERE `Total Cost`>100;
+
+--  show product table before and after deleting a product
+SELECT * FROM product;
+DELETE FROM product WHERE LOWER(productdescription) LIKE LOWER('%shirt%');
+SELECT * FROM product;
+-- this row was deleted because none of the attributes are foreign keys in other tables.
+
+-- show agent table before and after deleting agents from springfield
+SELECT * FROM agent;
+DELETE FROM agent WHERE city="Springfield";
+SELECT * FROM agent;
+-- these rows were not deleted because of a foreign key constraint: agentid is a foreign key in the customer table
